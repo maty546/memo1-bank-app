@@ -1,5 +1,4 @@
 package com.aninfo.integration.cucumber;
-
 import com.aninfo.exceptions.DepositNegativeSumException;
 import com.aninfo.exceptions.InsufficientFundsException;
 import com.aninfo.model.Account;

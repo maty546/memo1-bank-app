@@ -1,7 +1,9 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
+import com.aninfo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,10 +29,16 @@ public class Memo1BankApp {
 	@Autowired
 	private AccountService accountService;
 
+	@Autowired
+	private TransactionService transactionService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(Memo1BankApp.class, args);
 	}
 
+	///////////////////////
+	// Account Endpoints //
+	///////////////////////
 	@PostMapping("/accounts")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Account createAccount(@RequestBody Account account) {
@@ -67,12 +75,33 @@ public class Memo1BankApp {
 
 	@PutMapping("/accounts/{cbu}/withdraw")
 	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.withdraw(cbu, sum);
+		return accountService.withdraw(cbu, sum, transactionService);
 	}
 
 	@PutMapping("/accounts/{cbu}/deposit")
 	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.deposit(cbu, sum);
+		return accountService.deposit(cbu, sum, transactionService);
+	}
+
+	///////////////////////
+	// Account Endpoints //
+	///////////////////////
+
+
+	@GetMapping("/transactions/from-id/{id}")
+	public ResponseEntity<Transaction> getTransaction(@RequestParam Long id) {
+		Optional<Transaction> transactionOptional = transactionService.getTransaction(id);
+		return ResponseEntity.of(transactionOptional);
+	}
+
+	@GetMapping("/transactions/from-cbu/{cbu}")
+	public Collection<Transaction> getTransactionsFromAccount(@RequestParam Long id) {
+		return transactionService.getTransactionsFromAccount(id);
+	}
+
+	@DeleteMapping("/transactions")
+	public void deleteTransaction(@RequestParam Long id) {
+		transactionService.deleteById(id);
 	}
 
 	@Bean

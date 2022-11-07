@@ -1,5 +1,6 @@
 package com.aninfo.service;
-
+import com.aninfo.model.Transaction;
+import com.aninfo.service.TransactionService;
 import com.aninfo.exceptions.DepositNegativeSumException;
 import com.aninfo.exceptions.InsufficientFundsException;
 import com.aninfo.model.Account;
@@ -38,12 +39,18 @@ public class AccountService {
     }
 
     @Transactional
-    public Account withdraw(Long cbu, Double sum) {
+    public Account withdraw(Long cbu, Double sum, TransactionService transactionService) {
         Account account = accountRepository.findAccountByCbu(cbu);
 
         if (account.getBalance() < sum) {
             throw new InsufficientFundsException("Insufficient funds");
         }
+
+        Transaction t = new Transaction();
+		t.setValue(sum);
+		t.setType("Withdrawal");
+		t.setAccountCBU(cbu);
+		transactionService.createTransaction(t);
 
         account.setBalance(account.getBalance() - sum);
         accountRepository.save(account);
@@ -52,11 +59,21 @@ public class AccountService {
     }
 
     @Transactional
-    public Account deposit(Long cbu, Double sum) {
+    public Account deposit(Long cbu, Double sum, TransactionService transactionService) {
 
         if (sum <= 0) {
             throw new DepositNegativeSumException("Cannot deposit negative sums");
         }
+
+        if (sum >= 2000){
+            sum = sum + Math.min(sum * 0.1, 500);
+        }
+
+        Transaction t = new Transaction();
+		t.setValue(sum);
+		t.setType("Deposit");
+		t.setAccountCBU(cbu);
+		transactionService.createTransaction(t);
 
         Account account = accountRepository.findAccountByCbu(cbu);
         account.setBalance(account.getBalance() + sum);

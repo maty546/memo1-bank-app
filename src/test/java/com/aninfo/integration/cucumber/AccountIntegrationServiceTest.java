@@ -1,5 +1,5 @@
 package com.aninfo.integration.cucumber;
-
+import com.aninfo.service.TransactionService;
 import com.aninfo.Memo1BankApp;
 import com.aninfo.model.Account;
 import com.aninfo.service.AccountService;
@@ -14,16 +14,19 @@ public class AccountIntegrationServiceTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    TransactionService transactionService;
+
     Account createAccount(Double balance) {
         return accountService.createAccount(new Account(balance));
     }
 
     Account withdraw(Account account, Double sum) {
-        return accountService.withdraw(account.getCbu(), sum);
+        return accountService.withdraw(account.getCbu(), sum, transactionService);
     }
 
     Account deposit(Account account, Double sum) {
-        return accountService.deposit(account.getCbu(), sum);
+        return accountService.deposit(account.getCbu(), sum, transactionService);
     }
 
 }
