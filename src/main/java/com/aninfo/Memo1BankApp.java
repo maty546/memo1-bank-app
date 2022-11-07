@@ -73,28 +73,28 @@ public class Memo1BankApp {
 		accountService.deleteById(cbu);
 	}
 
-	@PutMapping("/accounts/{cbu}/withdraw")
+	////////////////////////////
+	// Transactions Endpoints //
+	////////////////////////////
+
+	@PutMapping("/transactions/withdraw/{cbu}")
 	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.withdraw(cbu, sum, transactionService);
 	}
 
-	@PutMapping("/accounts/{cbu}/deposit")
+	@PutMapping("/transactions/deposit/{cbu}")
 	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.deposit(cbu, sum, transactionService);
 	}
 
-	///////////////////////
-	// Account Endpoints //
-	///////////////////////
 
-
-	@GetMapping("/transactions/from-id/{id}")
+	@GetMapping("/transactions/get-from-id/{id}")
 	public ResponseEntity<Transaction> getTransaction(@RequestParam Long id) {
 		Optional<Transaction> transactionOptional = transactionService.getTransaction(id);
 		return ResponseEntity.of(transactionOptional);
 	}
 
-	@GetMapping("/transactions/from-cbu/{cbu}")
+	@GetMapping("/transactions/get-from-cbu/{cbu}")
 	public Collection<Transaction> getTransactionsFromAccount(@RequestParam Long id) {
 		return transactionService.getTransactionsFromAccount(id);
 	}
